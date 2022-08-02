@@ -28,6 +28,8 @@ static const struct sof_topology_token buffer_tokens[] = {
 		offsetof(struct sof_ipc_buffer, size), 0},
 	{SOF_TKN_BUF_CAPS, SND_SOC_TPLG_TUPLE_TYPE_WORD, get_token_uint32_t,
 		offsetof(struct sof_ipc_buffer, caps), 0},
+	{SOF_TKN_BUF_REFERENCE, SND_SOC_TPLG_TUPLE_TYPE_WORD, get_token_uint32_t,
+		offsetof(struct sof_ipc_buffer, reference), 0},
 };
 
 static const struct sof_topology_token buffer_comp_tokens[] = {
