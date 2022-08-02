@@ -514,7 +514,7 @@ static int smart_amp_prepare(struct comp_dev *dev)
 					     sink_list);
 		buffer_c = buffer_acquire(source_buffer);
 		/* FIXME: how often can this loop be run? */
-		if (buffer_c->source->ipc_config.type == SOF_COMP_DEMUX)
+		if (buffer_c->reference == SOF_COMP_DEMUX)
 			sad->feedback_buf = source_buffer;
 		else
 			sad->source_buf = source_buffer;

@@ -104,7 +104,7 @@ struct sof_ipc_buffer {
 	uint32_t size;		/**< buffer size in bytes */
 	uint32_t caps;		/**< SOF_MEM_CAPS_ */
 	uint32_t flags;		/**< SOF_BUF_ flags defined above */
-	uint32_t reserved;	/**< reserved for future use */
+	uint32_t reference;	/**< reference tag */
 } __attribute__((packed, aligned(4)));
 
 /* generic component config data - must always be after struct sof_ipc_comp */

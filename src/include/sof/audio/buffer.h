@@ -133,6 +133,7 @@ struct comp_buffer {
 	uint32_t pipeline_id;
 	uint32_t caps;
 	uint32_t core;
+	uint32_t reference;
 	struct tr_ctx tctx;			/* trace settings */
 
 	/* connected components */

@@ -48,6 +48,7 @@ struct comp_buffer *buffer_new(const struct sof_ipc_buffer *desc)
 		buffer->id = desc->comp.id;
 		buffer->pipeline_id = desc->comp.pipeline_id;
 		buffer->core = desc->comp.core;
+		buffer->reference = desc->reference;
 
 		buffer->stream.underrun_permitted = desc->flags &
 						    SOF_BUF_UNDERRUN_PERMITTED;

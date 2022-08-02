@@ -323,7 +323,7 @@ static int google_rtc_audio_processing_prepare(struct comp_dev *dev)
 							  struct comp_buffer, sink_list);
 		struct comp_buffer __sparse_cache *source_c = buffer_acquire(source);
 
-		if (source_c->source->pipeline->pipeline_id != dev->pipeline->pipeline_id) {
+		if (source_buffer->reference == SOF_COMP_DEMUX) {
 			cd->aec_reference = source;
 			aec_channels = sourcs_c->stream.channels;
 		} else {
