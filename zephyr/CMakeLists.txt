@@ -90,7 +90,7 @@ function(sof_llext_build module)
 	get_target_property(proc_out_file ${module} pkg_input)
 	add_llext_command(TARGET ${module}
 		POST_BUILD
-		COMMAND ${SOF_BASE}scripts/llext_link_helper.py
+		COMMAND ${PYTHON_EXECUTABLE} ${SOF_BASE}scripts/llext_link_helper.py
 			--text-addr="${SOF_LLEXT_TEXT_ADDR}" -f ${proc_in_file} ${CMAKE_C_COMPILER} --
 			-o ${proc_out_file} ${EXTRA_LINKER_PARAMS}
 	                $<TARGET_OBJECTS:${module}_llext_lib>
@@ -412,9 +412,6 @@ zephyr_library_sources(
 
 	# SOF mandatory audio processing
 	${SOF_AUDIO_PATH}/channel_map.c
-	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter_hifi3.c
-	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter.c
-	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter_generic.c
 	${SOF_AUDIO_PATH}/buffer.c
 	${SOF_AUDIO_PATH}/source_api_helper.c
 	${SOF_AUDIO_PATH}/sink_api_helper.c
@@ -704,6 +701,15 @@ zephyr_library_sources_ifdef(CONFIG_COMP_COPIER
 	${SOF_AUDIO_PATH}/copier/copier_dai.c
 )
 
+zephyr_library_sources(
+	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter_hifi3.c
+	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter.c
+	${SOF_AUDIO_PATH}/pcm_converter/pcm_converter_generic.c
+)
+zephyr_library_sources_ifdef(CONFIG_PCM_REMAPPING_CONVERTERS
+	${SOF_AUDIO_PATH}/pcm_converter/pcm_remap.c
+)
+
 zephyr_library_sources_ifdef(CONFIG_MAXIM_DSM
 	${SOF_AUDIO_PATH}/smart_amp/smart_amp.c
 	${SOF_AUDIO_PATH}/smart_amp/smart_amp_generic.c
@@ -734,14 +740,20 @@ zephyr_library_sources_ifdef(CONFIG_COMP_CROSSOVER
 	${SOF_AUDIO_PATH}/crossover/crossover_${ipc_suffix}.c
 )
 
-zephyr_library_sources_ifdef(CONFIG_COMP_DRC
-	${SOF_AUDIO_PATH}/drc/drc.c
-	${SOF_AUDIO_PATH}/drc/drc_generic.c
-	${SOF_AUDIO_PATH}/drc/drc_math_generic.c
-	${SOF_AUDIO_PATH}/drc/drc_hifi3.c
-	${SOF_AUDIO_PATH}/drc/drc_hifi4.c
-	${SOF_AUDIO_PATH}/drc/drc_math_hifi3.c
-)
+if(CONFIG_COMP_DRC STREQUAL "m")
+	add_subdirectory(${SOF_AUDIO_PATH}/drc/llext
+			 ${PROJECT_BINARY_DIR}/drc_llext)
+	add_dependencies(app drc)
+elseif(CONFIG_COMP_DRC)
+	zephyr_library_sources(
+		${SOF_AUDIO_PATH}/drc/drc.c
+		${SOF_AUDIO_PATH}/drc/drc_generic.c
+		${SOF_AUDIO_PATH}/drc/drc_math_generic.c
+		${SOF_AUDIO_PATH}/drc/drc_hifi3.c
+		${SOF_AUDIO_PATH}/drc/drc_hifi4.c
+		${SOF_AUDIO_PATH}/drc/drc_math_hifi3.c
+	)
+endif()
 
 zephyr_library_sources_ifdef(CONFIG_COMP_MULTIBAND_DRC
 	${SOF_AUDIO_PATH}/multiband_drc/multiband_drc.c

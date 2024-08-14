@@ -5,7 +5,6 @@
 // Author: Bartosz Kokoszko <bartoszx.kokoszko@linux.intel.com>
 
 #ifndef __SOF_MODULE_SERVICE_BUILD__
-#include <sof/compiler_attributes.h>
 #include <sof/audio/module_adapter/module/generic.h>
 #include <sof/audio/ipc-config.h>
 #include <sof/trace/trace.h>
@@ -38,6 +37,7 @@ DECLARE_TR_CTX(smart_amp_test_comp_tr, SOF_UUID(smart_amp_test_uuid),
 #include <ipc4/module.h>
 #include <sof/math/numbers.h>
 #endif
+#include <sof/compiler_attributes.h>
 #include <sof/samples/audio/smart_amp_test.h>
 #include <module/module/api_ver.h>
 #include <rimage/sof/user/manifest.h>
@@ -157,8 +157,6 @@ static inline int smart_amp_get_config(struct processing_module *mod,
 
 static int smart_amp_free(struct processing_module *mod)
 {
-	LOG_DBG("smart_amp_free()");
-
 #ifndef __SOF_MODULE_SERVICE_BUILD__
 	struct smart_amp_data *sad = module_get_private_data(mod);
 
@@ -320,8 +318,6 @@ static int smart_amp_process(struct processing_module *mod,
 
 static int smart_amp_reset(struct processing_module *mod)
 {
-	LOG_DBG("smart_amp_reset()");
-
 	return 0;
 }
 
@@ -415,6 +411,7 @@ static const struct sof_man_module_manifest main_manifest __section(".module") _
 		.uuid = {0x1E, 0x96, 0x7A, 0x16, 0xE4, 0x8A, 0xEA, 0x11,
 			 0x89, 0xF1, 0x00, 0x0C, 0x29, 0xCE, 0x16, 0x35},
 		.entry_point = (uint32_t)smart_amp_test_llext_entry,
+		.instance_max_count = 1,
 		.type = {
 #ifdef __SOF_MODULE_SERVICE_BUILD__
 			.load_type = SOF_MAN_MOD_TYPE_MODULE,

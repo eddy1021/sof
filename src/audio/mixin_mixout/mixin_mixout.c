@@ -173,9 +173,7 @@ static int mixout_init(struct processing_module *mod)
 static int mixin_free(struct processing_module *mod)
 {
 	struct mixin_data *md = module_get_private_data(mod);
-	struct comp_dev *dev = mod->dev;
 
-	comp_dbg(dev, "mixin_free()");
 	rfree(md);
 
 	return 0;
@@ -183,7 +181,6 @@ static int mixin_free(struct processing_module *mod)
 
 static int mixout_free(struct processing_module *mod)
 {
-	comp_dbg(mod->dev, "mixout_free()");
 	rfree(module_get_private_data(mod));
 
 	return 0;
@@ -554,9 +551,6 @@ static int mixout_process(struct processing_module *mod,
 static int mixin_reset(struct processing_module *mod)
 {
 	struct mixin_data *mixin_data = module_get_private_data(mod);
-	struct comp_dev *dev = mod->dev;
-
-	comp_dbg(dev, "mixin_reset()");
 
 	mixin_data->mix = NULL;
 	mixin_data->gain_mix = NULL;
@@ -567,8 +561,6 @@ static int mixin_reset(struct processing_module *mod)
 static int mixout_reset(struct processing_module *mod)
 {
 	struct comp_dev *dev = mod->dev;
-
-	comp_dbg(dev, "mixout_reset()");
 
 	/* FIXME: move this to module_adapter_reset() */
 	if (dev->pipeline->source_comp->direction == SOF_IPC_STREAM_PLAYBACK) {
@@ -980,8 +972,8 @@ SOF_LLEXT_MOD_ENTRY(mixout, &mixout_interface);
 
 static const struct sof_man_module_manifest mod_manifest[] __section(".module") __used =
 {
-	SOF_LLEXT_MODULE_MANIFEST("MIXIN", mixin_llext_entry, 1, UUID_MIXIN),
-	SOF_LLEXT_MODULE_MANIFEST("MIXOUT", mixout_llext_entry, 1, UUID_MIXOUT),
+	SOF_LLEXT_MODULE_MANIFEST("MIXIN", mixin_llext_entry, 1, UUID_MIXIN, 30),
+	SOF_LLEXT_MODULE_MANIFEST("MIXOUT", mixout_llext_entry, 1, UUID_MIXOUT, 30),
 };
 
 SOF_LLEXT_BUILDINFO;

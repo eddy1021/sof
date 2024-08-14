@@ -42,12 +42,16 @@ struct audio_stream;
  * \param ioffset offset to first sample in source stream
  * \param sink output buffer, write pointer is not modified
  * \param ooffset offset to first sample in sink stream
- * \param samples number of samples to convert
- * \return error code or number of processed samples.
+ * \param source_samples number of samples to convert, for remapping -- number of source samples
+ * \param chmap channel map for remapping, ignored by non-remapping conversion func
+ * \return error code or number of processed samples (source samples in case of remapping).
  */
 typedef int (*pcm_converter_func)(const struct audio_stream *source,
 				  uint32_t ioffset, struct audio_stream *sink,
-				  uint32_t ooffset, uint32_t samples);
+				  uint32_t ooffset, uint32_t source_samples, uint32_t chmap);
+
+/* A channel map that does not perform any remapping. */
+#define DUMMY_CHMAP 0x76543210
 
 /**
  * \brief PCM conversion function interface for data in linear buffer
@@ -71,6 +75,14 @@ extern const struct pcm_func_map pcm_func_map[];
 /** \brief Number of conversion functions. */
 extern const size_t pcm_func_count;
 
+#if CONFIG_PCM_REMAPPING_CONVERTERS
+/** \brief Map of formats with dedicated remap with conversion functions. */
+extern const struct pcm_func_map pcm_remap_func_map[];
+
+/** \brief Number of remap with conversion functions. */
+extern const size_t pcm_remap_func_count;
+#endif
+
 /**
  * \brief Retrieves PCM conversion function.
  * \param[in] in Source frame format.
@@ -93,6 +105,30 @@ pcm_get_conversion_function(enum sof_ipc_frame in,
 
 	return NULL;
 }
+
+#if CONFIG_PCM_REMAPPING_CONVERTERS
+/**
+ * \brief Retrieves PCM remap with conversion function.
+ * \param[in] in Source frame format.
+ * \param[in] out Sink frame format.
+ */
+static inline pcm_converter_func
+pcm_get_remap_function(enum sof_ipc_frame in, enum sof_ipc_frame out)
+{
+	int i;
+
+	for (i = 0; i < pcm_remap_func_count; i++) {
+		if (in != pcm_remap_func_map[i].source)
+			continue;
+		if (out != pcm_remap_func_map[i].sink)
+			continue;
+
+		return pcm_remap_func_map[i].func;
+	}
+
+	return NULL;
+}
+#endif
 
 /** \brief PCM conversion functions mapfor different size of valid bit and container. */
 struct pcm_func_vc_map {
@@ -159,5 +195,9 @@ pcm_get_conversion_vc_function(enum sof_ipc_frame in_bits,
 int pcm_convert_as_linear(const struct audio_stream *source, uint32_t ioffset,
 			  struct audio_stream *sink, uint32_t ooffset,
 			  uint32_t samples, pcm_converter_lin_func converter);
+
+/* Copy stream without conversion. chmap parameter is ignored. */
+int just_copy(const struct audio_stream *source, uint32_t ioffset,
+	      struct audio_stream *sink, uint32_t ooffset, uint32_t samples, uint32_t chmap);
 
 #endif /* __SOF_AUDIO_PCM_CONVERTER_H__ */

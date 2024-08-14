@@ -1,6 +1,10 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright(c) 2023 Intel Corporation. All rights reserved.
 
+# Because this is meant to be sourced
+# shellcheck disable=SC2148
+# shellcheck disable=SC2034
+
 ### XTENSA_ toolchain configuration shared across projects ###
 
 # These variables are currently used in/by:
@@ -141,6 +145,15 @@ case "$platform" in
 	;;
 esac
 
+# Pre-zephyr "XTOS" build, testbench,...
+case "$platform" in
+    mtl|lnl)
+	SOF_CC_BASE='clang';;
+    *)
+	SOF_CC_BASE='xcc';;
+esac
+
+# For Zephyr unit tests
 case "$platform" in
     imx8*|mtl|lnl)
         ZEPHYR_TOOLCHAIN_VARIANT='xt-clang';;
