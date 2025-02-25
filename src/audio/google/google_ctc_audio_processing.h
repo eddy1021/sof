@@ -40,6 +40,7 @@ struct google_ctc_audio_processing_comp_data {
 	bool enabled;
 	bool reconfigure;
 	ctc_func ctc_func;
+	struct comp_dev *dev;
 };
 
 struct google_ctc_config {

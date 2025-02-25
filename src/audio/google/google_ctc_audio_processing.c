@@ -92,6 +92,7 @@ static void ctc_s16_default(struct google_ctc_audio_processing_comp_data *cd,
 	int samples_to_written = MIN(samples, audio_stream_samples_without_wrap_s16(sink, dest));
 	int written_samples = 0;
 
+	comp_err(cd->dev, "ctc_s16(): enabled: %d", (int)cd->enabled);
 	if (!cd->enabled) {
 		ctc_passthrough(source, sink, input_buffers, output_buffers, frames);
 		return;
@@ -147,6 +148,7 @@ static void ctc_s24_default(struct google_ctc_audio_processing_comp_data *cd,
 	int samples_to_written = MIN(samples, audio_stream_samples_without_wrap_s24(sink, dest));
 	int written_samples = 0;
 
+	comp_err(cd->dev, "ctc_s24(): enabled: %d", (int)cd->enabled);
 	if (!cd->enabled) {
 		ctc_passthrough(source, sink, input_buffers, output_buffers, frames);
 		return;
@@ -202,6 +204,7 @@ static void ctc_s32_default(struct google_ctc_audio_processing_comp_data *cd,
 	int samples_to_written = MIN(samples, audio_stream_samples_without_wrap_s32(sink, dest));
 	int written_samples = 0;
 
+	comp_err(cd->dev, "ctc_s32(): enabled: %d", (int)cd->enabled);
 	if (!cd->enabled) {
 		ctc_passthrough(source, sink, input_buffers, output_buffers, frames);
 		return;
@@ -273,6 +276,7 @@ static int ctc_init(struct processing_module *mod)
 	}
 
 	module_set_private_data(mod, cd);
+	cd->dev = dev;
 
 	cd->chunk_frames = kChunkFrames;
 	buf_size = cd->chunk_frames * sizeof(cd->input[0]) * kMaxChannels;
